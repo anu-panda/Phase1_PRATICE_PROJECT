@@ -1,0 +1,25 @@
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class FirstServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        // Get session and store user name
+        HttpSession session = request.getSession();
+        String userName = request.getParameter("userName");
+        session.setAttribute("userName", userName);
+
+        // Create a form with a hidden field containing the session ID
+        out.println("<form action='SecondServlet' method='post'>");
+        out.println("<input type='hidden' name='sessionId' value='" + session.getId() + "'>");
+        out.println("<input type='submit' value='Go to Second Servlet'>");
+        out.println("</form>");
+    }
+}

@@ -1,0 +1,31 @@
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class SessionTrackingServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Check if session already exists
+        HttpSession session = request.getSession(false);
+
+        if (session == null) {
+            // Create a new session
+            session = request.getSession();
+            session.setAttribute("visitCount", 1);
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.println("<h1>Welcome to your first visit!</h1>");
+        } else {
+            // Increment visit count
+            int visitCount = (int) session.getAttribute("visitCount");
+            visitCount++;
+            session.setAttribute("visitCount", visitCount);
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.println("<h1>Welcome back! This is your visit number " + visitCount + ".</h1>");
+        }
+    }
+}

@@ -1,0 +1,29 @@
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class MyServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Get request parameters
+        String name = request.getParameter("name");
+
+        // Set response content type
+        response.setContentType("text/html");
+
+        // Get a PrintWriter to write the response
+        PrintWriter out = response.getWriter();
+
+        // Write the response HTML
+        out.println("<html>");
+        out.println("<head><title>Servlet Demo</title></head>");
+        out.println("<body>");
+        out.println("<h1>Hello, " + name + "!</h1>");
+        out.println("<p>This is a servlet using HttpServlet class and interfaces.</p>");
+        out.println("</body>");
+        out.println("</html>");
+    }
+}

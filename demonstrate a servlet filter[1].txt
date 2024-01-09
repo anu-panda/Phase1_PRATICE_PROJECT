@@ -1,0 +1,21 @@
+import java.io.*;
+import javax.servlet.*;
+
+public class MyFilter implements Filter {
+
+    public void init(FilterConfig config) throws ServletException {}
+
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        // Pre-processing
+        PrintWriter out = res.getWriter();
+        out.println("Filter is invoked before servlet<br>");
+
+        // Pass request to next resource (servlet or filter)
+        chain.doFilter(req, res);
+
+        // Post-processing
+        out.println("Filter is invoked after servlet<br>");
+    }
+
+    public void destroy() {}
+}
