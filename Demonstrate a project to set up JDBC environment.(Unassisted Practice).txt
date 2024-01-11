@@ -1,0 +1,64 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class JdbcDemo {
+
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/mydatabase";
+    private static final String USER = "your_mysql_username";
+    private static final String PASSWORD = "your_mysql_password";
+
+    public static void main(String[] args) {
+        Connection connection = null;
+
+        try {
+            // Establish a connection
+            connection = DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
+
+            // Insert data into the table
+            insertData(connection, "user1", "password1");
+
+            // Retrieve data from the table
+            retrieveData(connection);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void insertData(Connection connection, String username, String password) throws SQLException {
+        String insertQuery = "INSERT INTO users (username, password) VALUES (?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            preparedStatement.executeUpdate();
+            System.out.println("Data inserted successfully.");
+        }
+    }
+
+    private static void retrieveData(Connection connection) throws SQLException {
+        String retrieveQuery = "SELECT * FROM users";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(retrieveQuery);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.println("User Data:");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+
+                System.out.println("ID: " + id + ", Username: " + username + ", Password: " + password);
+            }
+        }
+    }
+}

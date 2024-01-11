@@ -1,0 +1,77 @@
+in mysql server
+
+DELIMITER //
+
+CREATE PROCEDURE GetUserByUserName(IN p_username VARCHAR(255))
+BEGIN
+    SELECT * FROM users WHERE username = p_username;
+END //
+
+DELIMITER ;
+in java code 
+import java.sql.*;
+
+public class JdbcDemoWithSP {
+
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/mydatabase";
+    private static final String USER = "your_mysql_username";
+    private static final String PASSWORD = "your_mysql_password";
+
+    public static void main(String[] args) {
+        Connection connection = null;
+        CallableStatement callableStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            // Establish a connection
+            connection = DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
+
+            // Call the stored procedure
+            String storedProcedureCall = "{CALL GetUserByUserName(?)}";
+            callableStatement = connection.prepareCall(storedProcedureCall);
+
+            // Set input parameter for the stored procedure
+            callableStatement.setString(1, "user1");
+
+            // Execute the stored procedure
+            resultSet = callableStatement.executeQuery();
+
+            // Process the result set
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+
+                System.out.println("ID: " + id + ", Username: " + username + ", Password: " + password);
+            }
+
+        } catch (SQLException e) {
+            handleSQLException(e);
+        } finally {
+            try {
+                // Close resources in reverse order of creation
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (callableStatement != null) {
+                    callableStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                handleSQLException(e);
+            }
+        }
+    }
+
+    private static void handleSQLException(SQLException e) {
+        System.err.println("SQLException:");
+        while (e != null) {
+            System.err.println("SQLState: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            System.err.println("Message: " + e.getMessage());
+            e = e.getNextException();
+        }
+    }
+}
